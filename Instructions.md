@@ -9,6 +9,10 @@
   ```
   deactivate
   ```
+## Installing Dependencies
+```
+pip install -r requirements.txt
+```
 ## Setting Environment Variable for json file
 ```
 $env:GOOGLE_APPLICATION_CREDENTIALS="file_name.json"
