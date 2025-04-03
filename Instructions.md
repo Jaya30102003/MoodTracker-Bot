@@ -1,10 +1,10 @@
 ## Setting Virtual Environment
 - creating new environment
- ```
- pip install virtualenv
- virtualenv env
- env/scripts/activate
- ```
+  ```
+  pip install virtualenv
+  virtualenv env
+  env/scripts/activate
+  ```
 - to deactivate the virtual environment
   ```
   deactivate
