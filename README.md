@@ -17,5 +17,7 @@ A multilingual mental health support chatbot and mood tracker that helps users m
 - **Authentication:** Flask-Login, bcrypt  
 - **Version Control:** Git & GitHub  
 
+For terminals instructions : [📜 Instructions](Instructions.md)
+
 ## 📞 Need Help?
 For queries or collaborations, feel free to reach out! 🚀
