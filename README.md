@@ -9,6 +9,9 @@ A multilingual mental health support chatbot and mood tracker that helps users m
 ✅ **Real-Time Exercises** – Provides stress relief techniques like breathing exercises  
 ✅ **Emergency Support** – Displays helpline numbers in crisis situations  
 
+## Preview
+![image](https://github.com/user-attachments/assets/d070991b-6311-4e83-81d8-cc3e05fdf2ca)
+
 ## **🛠️ Tech Stack**  
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Flask, Python  
