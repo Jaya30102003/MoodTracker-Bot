@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from langdetect import detect
 
 app = Flask(__name__)
 
@@ -24,8 +25,7 @@ login_manager.init_app(app)
 
 # Set up Dialogflow Credentials
 DIALOGFLOW_PROJECT_ID = "mood-chatbot-cdrq"
-DIALOGFLOW_LANGUAGE_CODE = "en"
-GOOGLE_APPLICATION_CREDENTIALS = "mood-chatbot-cdrq-5a6fd2510273.json"
+GOOGLE_APPLICATION_CREDENTIALS = "mood-chatbot-cdrq-93a7988e6386.json"
 
 # Ensure the environment variable is set
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
@@ -73,7 +73,7 @@ def register():
 # Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None  # Initialize error as None
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -82,10 +82,8 @@ def login():
             login_user(user)
             session['user_id'] = user.id
             return redirect(url_for('chat'))
-        error = "Invalid credentials!"  # Set error message
-
+        error = "Invalid credentials!"
     return render_template('login.html', error=error)
-
 
 # Logout
 @app.route('/logout')
@@ -103,25 +101,42 @@ def chat():
     chats = ChatHistory.query.filter_by(user_id=user_id).all()
     return render_template('chat.html', chats=chats)
 
-# Function to get Dialogflow response
+# Language Detection Function
+def detect_language(text):
+    try:
+        lang = detect(text)
+        if lang.startswith('ta'):
+            return 'ta'  # Tamil
+        elif lang.startswith('hi'):
+            return 'hi'  # Hindi
+        else:
+            return 'en'  # Default to English
+    except:
+        return 'en'
+
+# Get Dialogflow Response with Auto Language Detection
 def get_dialogflow_response(user_message):
     credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
     session_client = dialogflow.SessionsClient(credentials=credentials)
 
     session = session_client.session_path(DIALOGFLOW_PROJECT_ID, str(current_user.id))
-    text_input = dialogflow.TextInput(text=user_message, language_code=DIALOGFLOW_LANGUAGE_CODE)
+
+    # Auto-detect language
+    detected_lang = detect_language(user_message)
+
+    text_input = dialogflow.TextInput(text=user_message, language_code=detected_lang)
     query_input = dialogflow.QueryInput(text=text_input)
 
     response = session_client.detect_intent(request={"session": session, "query_input": query_input})
-    return response.query_result.fulfillment_text  # Extract bot response
+    return response.query_result.fulfillment_text
 
-# Store Chat (Now fetches response from Dialogflow)
+# Store Chat
 @app.route('/chat/store', methods=['POST'])
 @login_required
 def store_chat():
     data = request.json
     user_message = data['user_message']
-    bot_response = get_dialogflow_response(user_message)  # Get response from Dialogflow
+    bot_response = get_dialogflow_response(user_message)
 
     new_chat = ChatHistory(user_id=current_user.id, user_message=user_message, bot_response=bot_response)
     db.session.add(new_chat)
