@@ -23,4 +23,5 @@ A multilingual mental health support chatbot and mood tracker that helps users m
 For terminals instructions : [📜 Instructions](Instructions.md)
 
 ## 📞 Need Help?
+Contact for the API key.
 For queries or collaborations, feel free to reach out! 🚀
